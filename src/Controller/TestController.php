@@ -21,15 +21,13 @@ class TestController
         // query = get
         // request = post
 
-        $age = $request->query->get('age', 0);
+        $age = $request->attributes->get('age');
         
         return new Response("Vous avez $age ans !");
     }
 /* similaire à 
-    public function test(Request $request)
-    {
-        $age = $request->query->get('age', 0);
-        
+    public function test(Request $request, $age)
+    { // avec l'argumentsResolver        
         return new Response("Vous avez $age ans !");
     }
 */
