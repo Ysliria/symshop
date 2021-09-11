@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TestController
 {
@@ -13,22 +14,12 @@ class TestController
         die;
     }
 
-    public function test()
-    {
-        $request = Request::createFromGlobals();
-
-        // dump($request);
-        // query = get
-        // request = post
-
-        $age = $request->attributes->get('age');
-        
-        return new Response("Vous avez $age ans !");
-    }
-/* similaire à 
+    /**
+     * @Route("/test/{age</d+>?0}", name="test", methods={"GET", "POST"}, host="localhost", schemes={"http", "https"})
+     */
     public function test(Request $request, $age)
-    { // avec l'argumentsResolver        
+    {
         return new Response("Vous avez $age ans !");
     }
-*/
+
 }
