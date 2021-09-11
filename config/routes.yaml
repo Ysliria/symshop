@@ -5,6 +5,11 @@ index:
 test:
   path: /test/{age<\d+>?0}
   controller: App\Controller\TestController::test
+  methods: [GET, POST]
+  host: localhost
+  # host: monsite.com # accède que par monsite.com
+  # host: {subdomain}.monsite.com # accède par tous les sous-domaines
+  schemes: [https, http]
 #  defaults:
 #    age: 0
 #  requirements:
