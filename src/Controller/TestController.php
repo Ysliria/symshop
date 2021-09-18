@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Taxes\Calculator;
+use Cocur\Slugify\Slugify;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,8 +20,10 @@ class TestController extends AbstractController
     /**
      * @Route("/", name="home")
      */
-    public function index()
+    public function index(Slugify $slugify)
     {
+        $slug = $slugify->slugify('Cooucou les amis');
+        dd($slug);
         $tva = $this->calculator->calcul(100);
 
         return new Response($tva);
