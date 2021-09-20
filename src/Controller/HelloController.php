@@ -16,9 +16,15 @@ class HelloController extends AbstractController
     public function hello($prenom, Environment $twig)
     {
         $html = $twig->render('hello.html.twig', [
-            'prenom' => $prenom
+            'prenom' => $prenom,
+            'age' => 33,
+            'prenoms' => [
+                'Lior',
+                'Magalie',
+                'Elise'
+            ]
         ]);
-        
+
         return new Response($html);
     }
 }

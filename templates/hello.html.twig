@@ -10,5 +10,28 @@
 		<h1>Hello
 			{{prenom}}
 			!</h1>
+
+		<p>Vous avez
+			{{ age }}
+			ans</p>
+
+		{% if age >= 18%}
+			<p>Vous êtes un adulte</p>
+		{% else %}
+			<p>Vous êtes un enfant</p>
+		{% endif %}
+
+		<ul>
+			{% for i in 1..10 %}
+				<li>Numéro
+					{{ i }}</li>
+			{% endfor %}
+		</ul>
+
+		<ul>
+			{% for personne in prenoms %}
+				<li>{{ personne | upper }}</li>
+			{% endfor %}
+		</ul>
 	</body>
-</html>
+</html></body></html></body></html>
