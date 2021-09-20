@@ -17,11 +17,10 @@ class HelloController extends AbstractController
     {
         $html = $twig->render('hello.html.twig', [
             'prenom' => $prenom,
-            'ages' =>  [
-                12,
-                18,
-                29,
-                15
+            'formateur' => [
+                'prenom' => 'Lior',
+                'nom' => 'Chamla',
+                'age' => 33
             ]
         ]);
 
