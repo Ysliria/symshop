@@ -72,6 +72,7 @@
         }
     },
     "require-dev": {
+        "bluemmb/faker-picsum-photos-provider": "^2.0",
         "fakerphp/faker": "^1.16",
         "liorchamla/faker-prices": "^2.0"
     }
