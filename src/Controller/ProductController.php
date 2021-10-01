@@ -55,16 +55,16 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/create", name="product_create")
      */
-    public function create(FormFactoryInterface $formFactroyInterface)
+    public function create(FormFactoryInterface $formFactroyInterface, CategoryRepository $categoryRepository)
     {
         $builder = $formFactroyInterface->createBuilder();
         $builder->add('name', TextType::class, [
-            'label' => 'Nom du produit',
-            'attr' => [
-                'class' => 'form-control',
-                'placeholder' => 'Saisir le nom du produit'
-            ]
-        ])
+                'label' => 'Nom du produit',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Saisir le nom du produit'
+                ]
+            ])
             ->add('shortDescription', TextareaType::class, [
                 'label' => 'Description courte',
                 'attr' => [
@@ -79,17 +79,23 @@ class ProductController extends AbstractController
                     'placeholder' => 'Saisir le prix du produit en euro'
                 ]
             ])
-            ->add('category', ChoiceType::class, [
-                'label' => 'Categorie',
-                'attr' => [
-                    'class' => 'form-control'
-                ],
-                'placeholder' => '-- Choisir une catégorie --',
-                'choices' => [
-                    'Catégorie 1' => 1,
-                    'Categorie 2' => 2
-                ]
-            ]);
+        ;
+
+        $options = [];
+
+        foreach($categoryRepository->findAll() as $category) {
+            $options[$category->getName()] = $category->getId();
+        }
+
+
+        $builder->add('category', ChoiceType::class, [
+            'label' => 'Categorie',
+            'attr' => [
+                'class' => 'form-control'
+            ],
+            'placeholder' => '-- Choisir une catégorie --',
+            'choices' => $options
+        ]);
 
         $form     = $builder->getForm();
         $formView = $form->createView();
