@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -55,7 +58,7 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/create", name="product_create")
      */
-    public function create(FormFactoryInterface $formFactroyInterface, CategoryRepository $categoryRepository)
+    public function create(FormFactoryInterface $formFactroyInterface)
     {
         $builder = $formFactroyInterface->createBuilder();
         $builder->add('name', TextType::class, [
@@ -79,22 +82,20 @@ class ProductController extends AbstractController
                     'placeholder' => 'Saisir le prix du produit en euro'
                 ]
             ])
-        ;
-
-        $options = [];
-
-        foreach($categoryRepository->findAll() as $category) {
-            $options[$category->getName()] = $category->getId();
-        }
-
-
-        $builder->add('category', ChoiceType::class, [
+            ->add('category', EntityType::class, [
             'label' => 'Categorie',
             'attr' => [
                 'class' => 'form-control'
             ],
             'placeholder' => '-- Choisir une catégorie --',
-            'choices' => $options
+            'class' => Category::class,
+            'choice_label' => 'name'
+            /*
+            'choice_label' => function (Category $category) {
+                return strtoupper($categoiry->getName());
+            }
+            */
+            
         ]);
 
         $form     = $builder->getForm();
