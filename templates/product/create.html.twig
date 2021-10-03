@@ -12,8 +12,16 @@
 	{{ form_errors(formView) }}
 
 	<div class="row">
-		<div class="col">
-			{{ form_row(formView.name) }}
+		<div
+			class="col">
+			{#{{ form_row(formView.name) }}#}
+			<div class="form-group">
+				{{ form_label(formView.name) }}
+				{{ form_widget(formView.name, {'attr': {'class': 'form-control'}}) }}
+
+				{{ form_errors(formView.name) }}
+			</div>
+
 			{{ form_row(formView.shortDescription) }}
 		</div>
 

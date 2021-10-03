@@ -64,29 +64,23 @@ class ProductController extends AbstractController
         $builder->add('name', TextType::class, [
                 'label' => 'Nom du produit',
                 'attr' => [
-                    'class' => 'form-control',
                     'placeholder' => 'Saisir le nom du produit'
                 ]
             ])
             ->add('shortDescription', TextareaType::class, [
                 'label' => 'Description courte',
                 'attr' => [
-                    'class' => 'form-control',
                     'placeholder' => 'Saisir une description assez courte mais parlante pour le visiteur'
                 ]
             ])
             ->add('price', MoneyType::class, [
                 'label' => 'Prix du produit',
                 'attr' => [
-                    'class' => 'form-control',
                     'placeholder' => 'Saisir le prix du produit en euro'
                 ]
             ])
             ->add('category', EntityType::class, [
             'label' => 'Categorie',
-            'attr' => [
-                'class' => 'form-control'
-            ],
             'placeholder' => '-- Choisir une catégorie --',
             'class' => Category::class,
             'choice_label' => 'name'
