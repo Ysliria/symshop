@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Entity\Product;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -15,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProductController extends AbstractController
@@ -58,8 +60,9 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/create", name="product_create")
      */
-    public function create(FormFactoryInterface $formFactroyInterface)
+    public function create(FormFactoryInterface $formFactroyInterface, Request $request)
     {
+        dump($request);
         $builder = $formFactroyInterface->createBuilder();
         $builder->add('name', TextType::class, [
                 'label' => 'Nom du produit',
@@ -80,19 +83,26 @@ class ProductController extends AbstractController
                 ]
             ])
             ->add('category', EntityType::class, [
-            'label' => 'Categorie',
-            'placeholder' => '-- Choisir une catégorie --',
-            'class' => Category::class,
-            'choice_label' => 'name'
-            /*
-            'choice_label' => function (Category $category) {
-                return strtoupper($categoiry->getName());
-            }
-            */
-            
-        ]);
+                'label' => 'Categorie',
+                'placeholder' => '-- Choisir une catégorie --',
+                'class' => Category::class,
+                'choice_label' => 'name'            
+            ])
+        ;
 
         $form     = $builder->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+
+            $product = new Product;
+            $product->setName($data['name'])
+                ->setShortDescription($data['shortDescription'])
+                ->setPrice($data['price'])
+                ->setCategory($data['category']);
+        }
+
         $formView = $form->createView();
 
         return $this->render('product/create.html.twig', [
