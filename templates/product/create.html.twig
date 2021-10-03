@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% form_theme formView _self %}
+{% form_theme formView 'bootstrap_4_layout.html.twig' %}
 
 {% block title %}
 	Création d'un produit
@@ -32,6 +32,7 @@
 	{{ form_end(formView) }}
 {% endblock %}
 
+{#
 {% block form_row %}
 	<div class="form-group">
 		{{ form_label(form) }}
@@ -40,3 +41,4 @@
 		{{ form_errors(form) }}
 	</div>
 {% endblock %}
+#}
