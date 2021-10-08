@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Form\ProductType;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -66,43 +67,9 @@ class ProductController extends AbstractController
      */
     public function create(FormFactoryInterface $formFactroyInterface, Request $request, SluggerInterface $sluggerInterface, EntityManagerInterface $entityManagerInterface)
     {
-        $builder = $formFactroyInterface->createBuilder(FormType::class, null, [
-            'data_class' => Product::class
-        ]);
+        $builder = $formFactroyInterface->createBuilder(ProductType::class);
+        $form    = $builder->getForm();
 
-        $builder->add('name', TextType::class, [
-                'label' => 'Nom du produit',
-                'attr' => [
-                    'placeholder' => 'Saisir le nom du produit'
-                ]
-            ])
-            ->add('shortDescription', TextareaType::class, [
-                'label' => 'Description courte',
-                'attr' => [
-                    'placeholder' => 'Saisir une description assez courte mais parlante pour le visiteur'
-                ]
-            ])
-            ->add('price', MoneyType::class, [
-                'label' => 'Prix du produit',
-                'attr' => [
-                    'placeholder' => 'Saisir le prix du produit en euro'
-                ]
-            ])
-            ->add('mainPicture', UrlType::class, [
-                'label' => 'Image du produit',
-                'attr' => [
-                    'placeholder' => 'Tapez une URL d\'image'
-                ]
-            ])
-            ->add('category', EntityType::class, [
-                'label' => 'Categorie',
-                'placeholder' => '-- Choisir une catégorie --',
-                'class' => Category::class,
-                'choice_label' => 'name'            
-            ])
-        ;
-
-        $form     = $builder->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
