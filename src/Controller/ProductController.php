@@ -6,18 +6,22 @@ use App\Entity\Category;
 use App\Entity\Product;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ProductController extends AbstractController
 {
@@ -60,10 +64,12 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/create", name="product_create")
      */
-    public function create(FormFactoryInterface $formFactroyInterface, Request $request)
+    public function create(FormFactoryInterface $formFactroyInterface, Request $request, SluggerInterface $sluggerInterface, EntityManagerInterface $entityManagerInterface)
     {
-        dump($request);
-        $builder = $formFactroyInterface->createBuilder();
+        $builder = $formFactroyInterface->createBuilder(FormType::class, null, [
+            'data_class' => Product::class
+        ]);
+
         $builder->add('name', TextType::class, [
                 'label' => 'Nom du produit',
                 'attr' => [
@@ -82,6 +88,12 @@ class ProductController extends AbstractController
                     'placeholder' => 'Saisir le prix du produit en euro'
                 ]
             ])
+            ->add('mainPicture', UrlType::class, [
+                'label' => 'Image du produit',
+                'attr' => [
+                    'placeholder' => 'Tapez une URL d\'image'
+                ]
+            ])
             ->add('category', EntityType::class, [
                 'label' => 'Categorie',
                 'placeholder' => '-- Choisir une catégorie --',
@@ -94,13 +106,11 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $data = $form->getData();
-
-            $product = new Product;
-            $product->setName($data['name'])
-                ->setShortDescription($data['shortDescription'])
-                ->setPrice($data['price'])
-                ->setCategory($data['category']);
+            $product = $form->getData();
+            $product->setSlug(strtolower($sluggerInterface->slug($product->getName())));
+            
+            $entityManagerInterface->persist($product);
+            $entityManagerInterface->flush();
         }
 
         $formView = $form->createView();
