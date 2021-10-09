@@ -20,8 +20,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ProductController extends AbstractController
@@ -65,7 +67,7 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/{id}/edit", name="product_edit")
      */
-    public function edit($id, ProductRepository $productRepository, Request $request, EntityManagerInterface $entityManagerInterface)
+    public function edit($id, ProductRepository $productRepository, Request $request, EntityManagerInterface $entityManagerInterface, UrlGeneratorInterface $urlGeneratorInterface)
     {
         $product = $productRepository->findOneById($id);
         $form = $this->createForm(ProductType::class, $product);
@@ -75,6 +77,21 @@ class ProductController extends AbstractController
 
         if($form->isSubmitted()) {
             $entityManagerInterface->flush();
+
+            /*$url = $urlGeneratorInterface->generate('product_show', [
+                'category_slug' => $product->getCategory()->getSlug(),
+                'slug' => $product->getSlug()
+            ]);
+
+            $response = new RedirectResponse($url);
+
+
+            return $response;*/
+
+            return $this->redirectToRoute('product_show', [
+                'category_slug' => $product->getCategory()->getSlug(),
+                'slug' => $product->getSlug()
+            ]);
         }
 
         return $this->render('product/edit/html.twig', [
@@ -99,6 +116,11 @@ class ProductController extends AbstractController
             
             $entityManagerInterface->persist($product);
             $entityManagerInterface->flush();
+
+            return $this->redirectToRoute('product_show', [
+                'category_slug' => $product->getCategory()->getSlug(),
+                'slug' => $product->getSlug()
+            ]);
         }
 
         $formView = $form->createView();
