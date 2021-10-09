@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier
+	{{ category.name }}
+{% endblock %}
+
+{% block body %}
+	<h1>Modifier
+		{{ category.name }}</h1>
+
+
+	{{ form_start(categoryEditForm) }}
+	{{ form_widget(categoryEditForm) }}
+
+	<button type="submit" class="btn btn-primary">
+		<i class="fas fa-save"></i>
+		Enregister
+	</button>
+	{{ form_end(categoryEditForm) }}
+{% endblock %}
