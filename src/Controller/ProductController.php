@@ -67,26 +67,15 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/{id}/edit", name="product_edit")
      */
-    public function edit($id, ProductRepository $productRepository, Request $request, EntityManagerInterface $entityManagerInterface, UrlGeneratorInterface $urlGeneratorInterface)
+    public function edit($id, ProductRepository $productRepository, Request $request, EntityManagerInterface $entityManagerInterface)
     {
         $product = $productRepository->findOneById($id);
         $form = $this->createForm(ProductType::class, $product);
 
-        //$form->setData($product);
         $form->handleRequest($request);
 
         if($form->isSubmitted()) {
             $entityManagerInterface->flush();
-
-            /*$url = $urlGeneratorInterface->generate('product_show', [
-                'category_slug' => $product->getCategory()->getSlug(),
-                'slug' => $product->getSlug()
-            ]);
-
-            $response = new RedirectResponse($url);
-
-
-            return $response;*/
 
             return $this->redirectToRoute('product_show', [
                 'category_slug' => $product->getCategory()->getSlug(),
