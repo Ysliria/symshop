@@ -62,24 +62,12 @@ class ProductController extends AbstractController
      */
     public function edit($id, ProductRepository $productRepository, Request $request, EntityManagerInterface $entityManagerInterface, ValidatorInterface $validator)
     {
-        // Test
-        $product = new Product;
-
-        $resultat = $validator->validate($product)
-
-        if ($resultat->count() > 0) {
-            dd('Il y a des erreurs', $resultat);
-        }
-
-        dd('Tout va bien !');
-        // Fin test
-
         $product = $productRepository->findOneById($id);
         $form = $this->createForm(ProductType::class, $product);
 
         $form->handleRequest($request);
 
-        if($form->isSubmitted()) {
+        if($form->isSubmitted() && $form->isValid()) {
             $entityManagerInterface->flush();
 
             return $this->redirectToRoute('product_show', [
