@@ -2,16 +2,21 @@
 
 namespace App\Form;
 
-use App\Entity\Category;
 use App\Entity\Product;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Category;
+use App\Form\Type\PriceType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\FormBuilderInterface;
+use App\Form\DataTransformer\CentimesTransformer;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ProductType extends AbstractType
 {
@@ -34,7 +39,8 @@ class ProductType extends AbstractType
                 'label' => 'Prix du produit',
                 'attr' => [
                     'placeholder' => 'Saisir le prix du produit en euro'
-                ]
+                ],
+                'divisor' => 100
             ])
             ->add('mainPicture', UrlType::class, [
                 'label' => 'Image du produit',
