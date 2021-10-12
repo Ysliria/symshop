@@ -21,14 +21,15 @@ class Product
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(message="Le nom du produit est obligatoire !")
+     * @Assert\NotBlank(message="Le nom du produit est obligatoire !", groups={"large-name"})
      * @Assert\Length(min=3, max=255, minMessage="Le nom du produit doit contenir au moins 3 caractères")
+     * @Assert\Length(min=10, minMessage="Le nom du produit doit contenir au moins 10 caractères", groups={"large-name"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\NotBlank(message="Le prix du produit est obligatoire")
+     * @Assert\NotBlank(message="Le prix du produit est obligatoire", groups={"with-price"})
      */
     private $price;
 
