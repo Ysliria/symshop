@@ -44,7 +44,21 @@ class ProductType extends AbstractType
                     'placeholder' => 'Tapez une URL d\'image'
                 ]
             ])
+            ->add('category', EntityType::class, [
+                'label' => 'Categorie',
+                'placeholder' => '-- Choisir une catégorie --',
+                'class' => Category::class,
+                'choice_label' => 'name'            
+            ])
         ;
+
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function(FormEvent $event) {
+            $product = $event->getData();
+
+            if ($product->getPrice() !== null) {
+                $product->setPrice($product->getPrice() * 100);
+            }
+        });
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) {
             $form = $event->getForm();
@@ -52,13 +66,8 @@ class ProductType extends AbstractType
             /** @var Product */
             $product = $event->getData();
 
-            if($product->getId() === null) {
-                $form->add('category', EntityType::class, [
-                    'label' => 'Categorie',
-                    'placeholder' => '-- Choisir une catégorie --',
-                    'class' => Category::class,
-                    'choice_label' => 'name'            
-                ]);
+            if ($product->getPrice() !== null) {
+                $product->setPrice($product->getPrice() / 100);
             }
         });
     }
