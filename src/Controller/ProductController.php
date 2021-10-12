@@ -10,7 +10,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -60,18 +63,28 @@ class ProductController extends AbstractController
     public function edit($id, ProductRepository $productRepository, Request $request, EntityManagerInterface $entityManagerInterface, ValidatorInterface $validator)
     {
         // Test
-        $age = 200;
+        $client = [
+            'nom' => 'Chamla',
+            'prenom' => 'Lior',
+            'voiture' => [
+                'marque' => 'Hyundai',
+                'couleur' => 'Noire'
+            ]
+        ];
 
-        $resultat = $validator->validate($age, [
-            new LessThanOrEqual([
-                'value' => 120,
-                'message' => 'L\'âge doit être unférieur à {{ compared_value }}, mais vou avez donné {{ value }}.'
-            ]),
-            new GreaterThan([
-                'value' => 0,
-                'message' => 'L\'âge doit être supérieur à 0.'
+        $collection = new Collection([
+            'nom' => new NotBlank(['message' => 'Le nom ne doit pas être vide']),
+            'prenom' => [
+                new NotBlank(['message' => 'Le prénom ne doit pas être vide']),
+                new Length(['min' => 3, 'minMessage' => 'Le prénom ne doit pas avoir moins de 34 caractères'])
+            ],
+            'voiture' => new Collection([
+                'marque' => new NotBlank(['message' => 'La marque de la voiture est obligatoire']),
+                'couleur' => new NotBlank(['message' => 'La couleur de la voiture est obligatoire'])
             ])
         ]);
+
+        $resultat = $validator->validate($client, $collection);
 
         if ($resultat->count() > 0) {
             dd('Il y a des erreurs', $resultat);
