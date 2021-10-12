@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Product;
 use App\Entity\Category;
+use App\Form\DataTransformer\CentimesTransformer;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -54,25 +55,7 @@ class ProductType extends AbstractType
         ;
 
         // model transformer agit avant la construction du form , view transformer avant l'affichage
-        $builder->get('price')->addModelTransformer(new CallbackTransformer(
-            function($value) { 
-                // on recoit les données pour l'affichage
-                if ($value === null) {
-                    return;
-                }
-
-                return $value / 100;
-            },
-            function($value) {
-                // on soumet les données du formulaire
-                if ($value === null) {
-                    return;
-                }
-                
-                return $value * 100;
-
-            }
-        ));
+        $builder->get('price')->addModelTransformer(new CentimesTransformer);
     }
 
     public function configureOptions(OptionsResolver $resolver)
