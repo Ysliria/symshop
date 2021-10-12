@@ -2,29 +2,19 @@
 
 namespace App\Controller;
 
-use App\Entity\Category;
 use App\Entity\Product;
 use App\Form\ProductType;
-use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Constraints\LessThanOrEqual;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ProductController extends AbstractController
 {
@@ -67,8 +57,29 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/{id}/edit", name="product_edit")
      */
-    public function edit($id, ProductRepository $productRepository, Request $request, EntityManagerInterface $entityManagerInterface)
+    public function edit($id, ProductRepository $productRepository, Request $request, EntityManagerInterface $entityManagerInterface, ValidatorInterface $validator)
     {
+        // Test
+        $age = 200;
+
+        $resultat = $validator->validate($age, [
+            new LessThanOrEqual([
+                'value' => 120,
+                'message' => 'L\'âge doit être unférieur à {{ compared_value }}, mais vou avez donné {{ value }}.'
+            ]),
+            new GreaterThan([
+                'value' => 0,
+                'message' => 'L\'âge doit être supérieur à 0.'
+            ])
+        ]);
+
+        if ($resultat->count() > 0) {
+            dd('Il y a des erreurs', $resultat);
+        }
+
+        dd('Tout va bien !');
+        // Fin test
+
         $product = $productRepository->findOneById($id);
         $form = $this->createForm(ProductType::class, $product);
 
