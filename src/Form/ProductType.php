@@ -38,7 +38,8 @@ class ProductType extends AbstractType
                 'label' => 'Prix du produit',
                 'attr' => [
                     'placeholder' => 'Saisir le prix du produit en euro'
-                ]
+                ],
+                'divisor' => 100
             ])
             ->add('mainPicture', UrlType::class, [
                 'label' => 'Image du produit',
@@ -53,9 +54,6 @@ class ProductType extends AbstractType
                 'choice_label' => 'name'            
             ])
         ;
-
-        // model transformer agit avant la construction du form , view transformer avant l'affichage
-        $builder->get('price')->addModelTransformer(new CentimesTransformer);
     }
 
     public function configureOptions(OptionsResolver $resolver)
