@@ -60,16 +60,8 @@ class CategoryController extends AbstractController
      * @Route("/admin/category/{id}/edit", name="category_edit")
      */
     public function edit($id, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $entityManagerInterface, SluggerInterface $sluggerInterface, Security $security): Response
-    {
-        $user = $security->getUser();
-
-        if ($user === null) {
-            $this->redirectToRoute('security_login');
-        }
-        
-        if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            throw new AccessDeniedHttpException('Vous n\'avez pas le droit d\accéder à cette ressource');
-        }
+    {        
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Vous n\'avez pas le doit d\'acceder à cette ressource !');
 
         $category = $categoryRepository->find($id);
         $categoryEditForm = $this->createForm(CategoryType::class, $category);
