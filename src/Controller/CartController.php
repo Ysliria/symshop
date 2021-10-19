@@ -6,6 +6,7 @@ use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -31,10 +32,7 @@ class CartController extends AbstractController
             $cart[$id] = 1;
         }
 
-        /** @var FlashBag */
-        $flashBag = $sessionInterface->getBag('flashes');
-        
-        $flashBag->add('success', 'Le produit a bien été ajouté au panier');
+        $this->addFlash('success', 'Le produit a bien été ajouté au panier');
 
         $sessionInterface->set('cart', $cart);
 
