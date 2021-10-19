@@ -16,31 +16,42 @@ class CartService
         $this->productRepository = $productRepository;
     }
 
+    protected function getCart(): array
+    {
+        return $this->sessionInterface->get('cart', []);
+    }
+
+    protected function setCart(array $cart)
+    {
+        $this->sessionInterface->set('cart', $cart);
+    }
+
     public function add(int $id)
     {
-        $cart = $this->sessionInterface->get('cart', []);
+        $cart = $this->getCart();
 
-        if (array_key_exists($id, $cart)) {
-            $cart[$id]++;
-        } else {
-            $cart[$id] = 1;
+        if (!array_key_exists($id, $cart)) {
+            $cart[$id] = 0;
         }
+            
+        $cart[$id] += 1;
+        
 
-        $this->sessionInterface->set('cart', $cart);
+        $this->setCart($cart);
     }
 
     public function remove(int $id)
     {
-        $cart = $this->sessionInterface->get('cart', []);
+        $cart = $this->getCart();
 
         unset($cart[$id]);
 
-        $this->sessionInterface->set('cart', $cart);
+        $this->setCart($cart);
     }
 
     public function decrement($id)
     {
-        $cart = $this->sessionInterface->get('cart', []);
+        $cart = $this->getCart();
 
         if (!array_key_exists($id, $cart)) {
             return;
@@ -53,14 +64,14 @@ class CartService
 
         $cart[$id]--;
 
-        $this->sessionInterface->set('cart', $cart);
+        $this->setCart($cart);
     }
 
     public function getTotal(): int
     {
         $total = 0;
 
-        foreach ($this->sessionInterface->get('cart', []) as $id => $qty) {
+        foreach ($this->getCart() as $id => $qty) {
             $product = $this->productRepository->find($id);
 
             if (!$product) {
@@ -77,7 +88,7 @@ class CartService
     {
         $detailedCart = [];
 
-        foreach ($this->sessionInterface->get('cart', []) as $id => $qty) {
+        foreach ($this->getCart() as $id => $qty) {
             $product = $this->productRepository->find($id);
 
             if (!$product) {
