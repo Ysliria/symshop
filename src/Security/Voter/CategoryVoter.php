@@ -9,13 +9,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class CategoryVoter extends Voter
 {
-    protected CategoryRepository $categoryRepository;
-
-    public function __construct(CategoryRepository $categoryRepository)
-    {
-        $this->categoryRepository = $categoryRepository;
-    }
-
     protected function supports(string $attribute, $subject): bool
     {
         // replace with your own logic
@@ -31,17 +24,10 @@ class CategoryVoter extends Voter
         if (!$user instanceof UserInterface) {
             return false;
         }
-
-        $category = $this->categoryRepository->find($subject);
-
-        if (!$subject) {
-            return false;
-        }
-
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case 'CAN_EDIT':
-                return $category->getOwner() === $user;
+                return $subject->getOwner() === $user;
         }
 
         return false;

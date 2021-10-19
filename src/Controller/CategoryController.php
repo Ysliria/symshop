@@ -60,7 +60,6 @@ class CategoryController extends AbstractController
 
     /**
      * @Route("/admin/category/{id}/edit", name="category_edit")
-     * @IsGranted("CAN_EDIT", subject="id", message="Vous n'êtes pas le propriétaire de cette catégorie !")
      */
     public function edit($id, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $entityManagerInterface, SluggerInterface $sluggerInterface, Security $security): Response
     {        
@@ -70,7 +69,7 @@ class CategoryController extends AbstractController
             throw new NotFoundHttpException('Cette catégorie n\'existe pas');
         }
 
-//        $this->denyAccessUnlessGranted('CAN_EDIT', $category, 'Vous n\'êtes pas le propriétaire de cette catégorie !');
+        $this->denyAccessUnlessGranted('CAN_EDIT', $category, 'Vous n\'êtes pas le propriétaire de cette catégorie !');
         
         $categoryEditForm = $this->createForm(CategoryType::class, $category);
 
