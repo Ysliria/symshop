@@ -68,8 +68,6 @@ class CategoryController extends AbstractController
         if (!$category) {
             throw new NotFoundHttpException('Cette catégorie n\'existe pas');
         }
-
-        $this->denyAccessUnlessGranted('CAN_EDIT', $category, 'Vous n\'êtes pas le propriétaire de cette catégorie !');
         
         $categoryEditForm = $this->createForm(CategoryType::class, $category);
 
