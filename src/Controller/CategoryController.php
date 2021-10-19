@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -58,11 +59,10 @@ class CategoryController extends AbstractController
 
     /**
      * @Route("/admin/category/{id}/edit", name="category_edit")
+     * @IsGranted("ROLE_ADMIN", message="Vous n'avez pas le doit d'acceder à cette ressource !")
      */
     public function edit($id, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $entityManagerInterface, SluggerInterface $sluggerInterface, Security $security): Response
     {        
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Vous n\'avez pas le doit d\'acceder à cette ressource !');
-
         $category = $categoryRepository->find($id);
         $categoryEditForm = $this->createForm(CategoryType::class, $category);
 
