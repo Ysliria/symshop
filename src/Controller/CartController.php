@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cart\CartService;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +17,7 @@ class CartController extends AbstractController
     /**
      * @Route("/cart/add/{id}", name="cart_add", requirements={"id": "\d+"})
      */
-    public function add($id, ProductRepository $productRepository, SessionInterface $sessionInterface): Response
+    public function add($id, ProductRepository $productRepository, CartService $cartService): Response
     {
         $product = $productRepository->find($id);
 
@@ -24,17 +25,9 @@ class CartController extends AbstractController
             throw new NotFoundHttpException("Le produit $id n'existe pas !");
         }
 
-        $cart = $sessionInterface->get('cart', []);
-
-        if (array_key_exists($id, $cart)) {
-            $cart[$id]++;
-        } else {
-            $cart[$id] = 1;
-        }
+        $cartService->add($id);
 
         $this->addFlash('success', 'Le produit a bien été ajouté au panier');
-
-        $sessionInterface->set('cart', $cart);
 
         return $this->redirectToRoute('product_show', [
             'category_slug' => $product->getCategory()->getSlug(),
@@ -45,21 +38,10 @@ class CartController extends AbstractController
     /**
      * @Route("/cart", name="cart_show")
      */
-    public function show(SessionInterface $sessionInterface, ProductRepository $productRepository)
+    public function show(CartService $cartService)
     {
-        $detailedCart = [];
-        $total = 0;
-
-        foreach ($sessionInterface->get('cart', []) as $id => $qty) {
-            $product = $productRepository->find($id);
-
-            $detailedCart[] = [
-                'product' => $product,
-                'qty' => $qty
-            ];
-
-            $total += ($product->getPrice() * $qty);
-        }
+        $detailedCart = $cartService->getFetailedCardItems();
+        $total = $cartService->getTotal();
 
         return $this->render('cart/index.html.twig', [
             'items' => $detailedCart,
