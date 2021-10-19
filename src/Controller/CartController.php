@@ -31,6 +31,11 @@ class CartController extends AbstractController
             $cart[$id] = 1;
         }
 
+        /** @var FlashBag */
+        $flashBag = $sessionInterface->getBag('flashes');
+        
+        $flashBag->add('success', 'Le produit a bien été ajouté au panier');
+
         $sessionInterface->set('cart', $cart);
 
         return $this->redirectToRoute('product_show', [
