@@ -55,6 +55,11 @@ class Purchase
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private $purchasedAt;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -140,6 +145,18 @@ class Purchase
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPurchasedAt(): ?\DateTimeImmutable
+    {
+        return $this->purchasedAt;
+    }
+
+    public function setPurchasedAt(\DateTimeImmutable $purchasedAt): self
+    {
+        $this->purchasedAt = $purchasedAt;
 
         return $this;
     }

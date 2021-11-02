@@ -89,6 +89,7 @@ class AppFixtures extends Fixture
                 ->setCity($faker->city())
                 ->setUser($faker->randomElement($users))
                 ->setTotal(mt_rand(2000, 30000))
+                ->setPurchasedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months')))
             ;
 
             if($faker->boolean(90)) {
