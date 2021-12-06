@@ -31,6 +31,7 @@ class PurchaseConfirmationController extends AbstractController
      */
     public function confirm(Request $request)
     {
+        $purchase = new Purchase;
         $form = $this->createForm(CartConfirmationType::class);
         $form->handleRequest($request);
 

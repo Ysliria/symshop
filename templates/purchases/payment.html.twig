@@ -6,4 +6,54 @@
 
 {% block body %}
     <h1>Payez votre commande</h1>
+
+    <form id="payment-form">
+        <div id="payment-element">
+            <!--Stripe.js injects the Payment Element-->
+        </div>
+
+        <button id="submit" class="btn btn-success">
+            <div class="spinner hidden" id="spinner"></div>
+            <span id="button-text">Payer</span>
+        </button>
+        <div id="payment-message" class="hidden"></div>
+    </form>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const clientSecret = '{{ clientSecret }}'
+        const stripe = Stripe("pk_test_51I5nGIHP4MlDkgKUa5TxgJuSEOUsKvdSrfuKCnD4hhDuEdthYgyApcg3I6fhjpdpCaXtM5KkNfT6MOpRHcWcLBDH00pfB534rW");
+        const elements = stripe.elements();
+        const card = elements.create("card");
+
+        card.mount("#cart-elements");
+        card.on("change", function (event) {
+            document.querySelector("button").disabled = event.empty;
+            document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
+        });
+
+        const form = document.getElementById("payment-form");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            stripe
+                .confirmationCardPayment(clientSecret, {
+                    paymentMethod: {
+                        card: card
+                    }
+                })
+                .then(function (result) {
+                    if (result.error) {
+                        console.log(result.error.message);
+                    } else {
+                        console.log(result);
+                    }
+                });
+        });
+
+    </script>
 {% endblock %}
