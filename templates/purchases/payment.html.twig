@@ -24,35 +24,9 @@
     {{ parent() }}
     <script src="https://js.stripe.com/v3/"></script>
     <script>
-        const clientSecret = '{{ clientSecret }}'
-        const stripe = Stripe("pk_test_51I5nGIHP4MlDkgKUa5TxgJuSEOUsKvdSrfuKCnD4hhDuEdthYgyApcg3I6fhjpdpCaXtM5KkNfT6MOpRHcWcLBDH00pfB534rW");
-        const elements = stripe.elements();
-        const card = elements.create("card");
-
-        card.mount("#cart-elements");
-        card.on("change", function (event) {
-            document.querySelector("button").disabled = event.empty;
-            document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
-        });
-
-        const form = document.getElementById("payment-form");
-
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            stripe
-                .confirmationCardPayment(clientSecret, {
-                    paymentMethod: {
-                        card: card
-                    }
-                })
-                .then(function (result) {
-                    if (result.error) {
-                        console.log(result.error.message);
-                    } else {
-                        window.location.href = "{{ url('purchase_payement_success', {'id': purchase.id}) }}";
-                    }
-                });
-        });
+        const clientSecret = '{{ clientSecret }}';
+        const stripePublicKey = '{{ stripePublicKey }}';
+        const redirectAfterSuccessUrl = "{{ url('purchase_payement_success', {'id': purchase.id}) }}";
     </script>
+    <script src="/js/payment.js"></script>
 {% endblock %}
