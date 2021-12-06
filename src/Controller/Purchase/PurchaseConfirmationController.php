@@ -31,6 +31,7 @@ class PurchaseConfirmationController extends AbstractController
      */
     public function confirm(Request $request)
     {
+        $purchase = new Purchase;
         $form = $this->createForm(CartConfirmationType::class);
         $form->handleRequest($request);
 
@@ -40,7 +41,6 @@ class PurchaseConfirmationController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        $user      = $this->getUser();
         $cartItems = $this->cartService->getDetailedCardItems();
 
         if (count($cartItems) === 0) {
@@ -53,9 +53,9 @@ class PurchaseConfirmationController extends AbstractController
         $purchase = $form->getData();
 
         $this->persister->storePurchase($purchase);
-        $this->cartService->empty();
-        $this->addFlash('success', 'La commande a bien été enregistrée !');
 
-        return $this->redirectToRoute('purchase_index');
+        return $this->redirectToRoute('purchase_payment_form', [
+            'id' => $purchase->getId()
+        ]);
     }
 }

@@ -21,7 +21,7 @@ class PurchasePersister
         $this->entityManager = $entityManager;
     }
 
-    public function storePurchase(Purchase $purchase)
+    public function storePurchase(Purchase $purchase): void
     {
         $purchase->setUser($this->security->getUser())
             ->setPurchasedAt(new \DateTimeImmutable())
