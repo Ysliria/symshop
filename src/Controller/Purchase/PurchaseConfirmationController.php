@@ -4,8 +4,8 @@ namespace App\Controller\Purchase;
 
 use App\Cart\CartService;
 use App\Entity\Purchase;
-use App\Entity\PurchaseItem;
 use App\Form\CartConfirmationType;
+use App\Purchase\PurchasePersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,11 +16,13 @@ class PurchaseConfirmationController extends AbstractController
 {
     protected EntityManagerInterface $entityManager;
     protected CartService $cartService;
+    protected PurchasePersister $persister;
 
-    public function __construct(CartService $cartService, EntityManagerInterface $entityManager)
+    public function __construct(CartService $cartService, EntityManagerInterface $entityManager, PurchasePersister $persister)
     {
         $this->cartService   = $cartService;
         $this->entityManager = $entityManager;
+        $this->persister = $persister;
     }
 
     /**
@@ -50,27 +52,7 @@ class PurchaseConfirmationController extends AbstractController
         /** @var Purchase */
         $purchase = $form->getData();
 
-        $purchase->setUser($user)
-            ->setPurchasedAt(new \DateTimeImmutable())
-            ->setTotal($this->cartService->getTotal())
-        ;
-
-        $this->entityManager->persist($purchase);
-
-        foreach ($this->cartService->getDetailedCardItems() as $cartItem) {
-            $purchaseItem = new PurchaseItem();
-
-            $purchaseItem->setPurchase($purchase)
-                ->setProduct($cartItem->product)
-                ->setProductName($cartItem->product->getName())
-                ->setQuantity($cartItem->qty)
-                ->setTotal($cartItem->getTotal())
-                ->setProductPrice($cartItem->product->getPrice);
-
-            $this->entityManager->persist($purchaseItem);
-        }
-
-        $this->entityManager->flush();
+        $this->persister->storePurchase($purchase);
         $this->cartService->empty();
         $this->addFlash('success', 'La commande a bien été enregistrée !');
 
