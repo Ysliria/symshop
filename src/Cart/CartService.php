@@ -26,6 +26,11 @@ class CartService
         $this->sessionInterface->set('cart', $cart);
     }
 
+    public function empty()
+    {
+        $this->saveCart();
+    }
+
     public function add(int $id)
     {
         $cart = $this->getCart();
