@@ -30,7 +30,8 @@ class PurchasePaymentController extends AbstractController
         );
 
         return $this->render('purchase/payment.html.twig', [
-            'clientSecret' => $paymentIntent->client_secret
+            'clientSecret' => $paymentIntent->client_secret,
+            'purchase' => $purchase
         ]);
     }
 

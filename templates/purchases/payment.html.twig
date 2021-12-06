@@ -50,10 +50,9 @@
                     if (result.error) {
                         console.log(result.error.message);
                     } else {
-                        console.log(result);
+                        window.location.href = "{{ url('purchase_payement_success', {'id': purchase.id}) }}";
                     }
                 });
         });
-
     </script>
 {% endblock %}
