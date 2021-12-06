@@ -3,57 +3,77 @@
 namespace App\Controller\Purchase;
 
 use App\Cart\CartService;
+use App\Entity\Purchase;
+use App\Entity\PurchaseItem;
 use App\Form\CartConfirmationType;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Security;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class PurchaseConfirmationController extends AbstractController
 {
-    protected $formFactory;
-    protected $routerInterface;
-    protected $security;
-    protected $cartService;
+    protected EntityManagerInterface $entityManager;
+    protected CartService $cartService;
 
-    public function __construct(FormFactoryInterface $FormFactory, RouterInterface $routerInterface, Security $security, CartService $cartService)
+    public function __construct(CartService $cartService, EntityManagerInterface $entityManager)
     {
-        $this->formFactory = $FormFactory;  
-        $this->routerInterface = $routerInterface; 
-        $this->security =$security;
-        $this->cartService = $cartService;
+        $this->cartService   = $cartService;
+        $this->entityManager = $entityManager;
     }
 
     /**
      * @Route("/purchase/confirm", name="purchase_confirm")
+     * @IsGranted("ROLE_USER", message="Vous devez être connecté pour confirmez une commande")
      */
-    public function confirm(Request $request, FlashBagInterface $flashBag)
+    public function confirm(Request $request)
     {
-        $form = $this->formFactory->create(CartConfirmationType::class);
+        $form = $this->createForm(CartConfirmationType::class);
         $form->handleRequest($request);
 
         if (!$form->isSubmitted()) {
-            $flashBag->add('warning', 'Vous devez remplir le formulaire de confrmation');
-            return new RedirectResponse($this->routerInterface->generate('cart_show'));
+            $this->addFlash('warning', 'Vous devez remplir le formulaire de confrmation');
+
+            return $this->redirectToRoute('cart_show');
         }
 
-        $user = $this->security->getUser();
-
-        if (!$user) {
-            throw new AccessDeniedException('Vous devez être connecté pour confirmez une commande');
-        }
-
+        $user      = $this->getUser();
         $cartItems = $this->cartService->getDetailedCardItems();
 
         if (count($cartItems) === 0) {
-            $flashBag->add('warning', 'Vous ne pouvez pas confirmer une commande avec un panier vide !');
-            return new RedirectResponse($this->routerInterface->generate('cart_show'));
+            $this->addFlash('warning', 'Vous ne pouvez pas confirmer une commande avec un panier vide !');
+
+            return $this->redirectToRoute('cart_show');
         }
+
+        /** @var Purchase */
+        $purchase = $form->getData();
+        $purchase->setUser($user)->setPurchasedAt(new \DateTimeImmutable());
+
+        $this->entityManager->persist($purchase);
+
+        $total = 0;
+
+        foreach ($this->cartService->getDetailedCardItems() as $cartItem) {
+            $purchaseItem = new PurchaseItem();
+            
+            $purchaseItem->setPurchase($purchase)
+                ->setProduct($cartItem->product)
+                ->setProductName($cartItem->product->getName())
+                ->setQuantity($cartItem->qty)
+                ->setTotal($cartItem->getTotal())
+                ->setProductPrice($cartItem->product->getPrice);
+
+            $total += $cartItem->getTotal();
+
+            $this->entityManager->persist($purchaseItem);
+        }
+
+        $purchase->setTotal($total);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'La commande a bien été enregistrée !');
+
+        return $this->redirectToRoute('purchase_index');
     }
 }
