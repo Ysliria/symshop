@@ -35,7 +35,7 @@ class PurchasePersister
                 ->setProductName($cartItem->product->getName())
                 ->setQuantity($cartItem->qty)
                 ->setTotal($cartItem->getTotal())
-                ->setProductPrice($cartItem->product->getPrice);
+                ->setProductPrice($cartItem->product->getPrice());
 
             $this->entityManager->persist($purchaseItem);
         }

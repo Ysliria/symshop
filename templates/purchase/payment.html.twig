@@ -28,5 +28,5 @@
         const stripePublicKey = '{{ stripePublicKey }}';
         const redirectAfterSuccessUrl = "{{ url('purchase_payement_success', {'id': purchase.id}) }}";
     </script>
-    <script src="/js/payment.js"></script>
+    <script src="{{ asset('js/payment.js') }}"></script>
 {% endblock %}

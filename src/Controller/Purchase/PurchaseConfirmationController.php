@@ -31,8 +31,8 @@ class PurchaseConfirmationController extends AbstractController
      */
     public function confirm(Request $request)
     {
-        $purchase = new Purchase;
-        $form = $this->createForm(CartConfirmationType::class);
+        $purchase = new Purchase();
+        $form = $this->createForm(CartConfirmationType::class, $purchase);
         $form->handleRequest($request);
 
         if (!$form->isSubmitted()) {
@@ -49,7 +49,6 @@ class PurchaseConfirmationController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        /** @var Purchase */
         $purchase = $form->getData();
 
         $this->persister->storePurchase($purchase);
