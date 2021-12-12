@@ -2,6 +2,8 @@
 
 namespace App\Stripe;
 
+use App\Entity\Purchase;
+
 class StripeService
 {
     protected $secretKey;

@@ -154,6 +154,9 @@
     "stripe/stripe-php": {
         "version": "v7.104.0"
     },
+    "symfony/asset": {
+        "version": "v5.3.11"
+    },
     "symfony/cache": {
         "version": "v5.3.7"
     },

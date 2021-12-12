@@ -33,17 +33,17 @@ class ProductViewEmailSubscriber implements EventSubscriberInterface
      */
     public function sendViewEmail(ProductViewEvent $productViewEvent)
     {
-        $email = new TemplatedEmail();
-        $email
-            ->from(new Address('contact@mail.com', 'Infos de la boutique'))
-            ->to('admin@mail.com')
-            ->htmlTemplate('emails/product_view.html.twig')
-            ->context([
-                'product' => $productViewEvent->getProduct()
-            ])
-            ->subject('Visite du produit n° ' . $productViewEvent->getProduct()->getid())
-        ;
-        $this->mailer->send($email);
+//        $email = new TemplatedEmail();
+//        $email
+//            ->from(new Address('contact@mail.com', 'Infos de la boutique'))
+//            ->to('admin@mail.com')
+//            ->htmlTemplate('emails/product_view.html.twig')
+//            ->context([
+//                'product' => $productViewEvent->getProduct()
+//            ])
+//            ->subject('Visite du produit n° ' . $productViewEvent->getProduct()->getid())
+//        ;
+//        $this->mailer->send($email);
 
         $this->logger->info('Le produit ' . $productViewEvent->getProduct()->getName() . ' a été vu !');
     }
