@@ -47,6 +47,15 @@ services:
       }
     ]
 
+  App\Doctrine\Listener\CategorySlugListener:
+    tags: [
+      {
+        name: 'doctrine.orm.entity.event_listener',
+        event: prePersist,
+        entity: App\Entity\Category
+      }
+    ]
+
 #  App\EventDispatcher\PrenomListener:
 #    tags: [
 #      {
